@@ -5,13 +5,16 @@ from fastapi.responses import StreamingResponse, FileResponse
 
 from io import BytesIO
 import os
+import time
 
-from sql_db.database import SessionLocal, engine
-from sql_db import crud
-from sql_db import models
+from .sql_db.database import SessionLocal, engine
+from .sql_db import crud
+from .sql_db import models
 # from sql_db.database import Base
 
+
 models.Base.metadata.create_all(bind=engine)
+
 
 app = FastAPI()
 
@@ -28,9 +31,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-videoFolder = "/home/tilman/Desktop/streetviewvideotest/"
+from dotenv import load_dotenv
+load_dotenv()
+
+videoFolder = os.getenv("DOCKER_VIDEO_FOLDER")
 
 # Dependency
+
 def get_db():
 
     db = SessionLocal()
@@ -38,6 +45,8 @@ def get_db():
         yield db
     finally:
         db.close()
+            
+
 
 @app.get("/")
 async def root():

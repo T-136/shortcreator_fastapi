@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Session
-import psycopg2
 from io import BytesIO
 import os
 
-from  sql_db import models
+from . import models
 # from sql_db import schemas
 
 def get_clip(db: Session, clip_id: int):
