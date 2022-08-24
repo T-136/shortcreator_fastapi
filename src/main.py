@@ -5,7 +5,6 @@ from fastapi.responses import StreamingResponse, FileResponse
 
 from io import BytesIO
 import os
-import time
 
 from .sql_db.database import SessionLocal, engine
 from .sql_db import crud

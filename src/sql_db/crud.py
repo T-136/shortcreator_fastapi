@@ -6,7 +6,13 @@ from . import models
 # from sql_db import schemas
 
 def get_clip(db: Session, clip_id: int):
-    return db.query(models.Clip).filter(models.Clip.clip_id == clip_id).first()
+    clip_dict = {}
+    clip_dict = db.query(models.Clip).filter(models.Clip.clip_id == clip_id).first().__dict__
+    print(clip_dict)
+    if clip_dict["ymusic_id"]:
+        clip_dict.update(db.query(models.Ymusic).filter(models.Ymusic.ymusic_id == clip_dict["ymusic_id"]).first().__dict__)
+        # clip_dict.update(db.query(models.Ymusic).filter(models.Ymusic.ymusic_id == clip_dict["ymusic_id"]).first())
+    return clip_dict
 
 def get_allclips(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Clip).limit(limit).all()
@@ -39,8 +45,10 @@ def edit_clip(db: Session, data_for_clip):
 def write_edit_db(data_for_clip, db: Session):
     clip, ymusic, nameOfExistingSong = addDataToClip(data_for_clip, db)
     db.add(clip)
+    db.add(ymusic)
     db.commit()
     db.refresh(clip)
+    db.refresh(ymusic)
     return clip, ymusic, nameOfExistingSong
 
 def addDataToClip(requestform, db: Session):
@@ -61,9 +69,10 @@ def addDataToClip(requestform, db: Session):
 
         if  db.query(models.Ymusic).filter(models.Ymusic.ymusic_id == requestform["ymusic_id"]).first():
             ymusic = db.query(models.Ymusic).filter(models.Ymusic.ymusic_id == requestform["ymusic_id"]).first()
-            nameOfExistingSong = ymusic.title
+            nameOfExistingSong = ymusic.ymusic_title
         
-        elif not (models.Ymusic.query.filter_by(ymusic_id=requestform["ymusic_id"]).first()):
+        elif not db.query(models.Ymusic).filter(models.Ymusic.ymusic_id == requestform["ymusic_id"]).first():
+            print("creating new ymusic")
             ymusic = models.Ymusic()
             nameOfExistingSong = ""
     else:
@@ -75,7 +84,7 @@ def addDataToClip(requestform, db: Session):
         if checkboxe not in requestform:
             setattr(clip, checkboxe, 0)
 
-    
+
     for request_iteration in requestform:
         if request_iteration == "clip_id":
             continue
@@ -85,7 +94,11 @@ def addDataToClip(requestform, db: Session):
         elif requestform[request_iteration] == "non":
             setattr(clip, request_iteration, 0)
 
-        elif request_iteration == "ymusic_id" or request_iteration == "title":
+        elif request_iteration == "ymusic_id" :
+            setattr(clip, request_iteration, requestform[request_iteration])
+            setattr(ymusic, request_iteration, requestform[request_iteration])
+            
+        elif request_iteration == "ymusic_title":
             if ymusic != None:
                 setattr(ymusic, request_iteration, requestform[request_iteration])
          
@@ -93,7 +106,6 @@ def addDataToClip(requestform, db: Session):
             setattr(clip, request_iteration, None)
         else:
             setattr(clip, request_iteration, requestform[request_iteration])
-
 
     return clip, ymusic, nameOfExistingSong 
 

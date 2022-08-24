@@ -20,14 +20,14 @@ class Clip(Base):
     isUploadedTikTok = Column(Boolean, default=False)
     isUploadedInstagram = Column(Boolean, default=False)
 
-    ymusic_id = Column(Integer, ForeignKey("ymusic.ymusic_id"))
+    ymusic_id = Column(String, ForeignKey("ymusic.ymusic_id"))
     ymusic = relationship("Ymusic", back_populates="clip")
 
 
 class Ymusic(Base):
     __tablename__ = "ymusic"
 
-    ymusic_id = Column(Integer, primary_key = True)
-    title = Column(String)
+    ymusic_id = Column(String, primary_key = True)
+    ymusic_title = Column(String)
 
     clip = relationship('Clip', back_populates = 'ymusic') 
