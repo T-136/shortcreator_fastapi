@@ -45,10 +45,11 @@ def edit_clip(db: Session, data_for_clip):
 def write_edit_db(data_for_clip, db: Session):
     clip, ymusic, nameOfExistingSong = addDataToClip(data_for_clip, db)
     db.add(clip)
-    db.add(ymusic)
+    if not ymusic == None:
+        db.add(ymusic)
     db.commit()
     db.refresh(clip)
-    db.refresh(ymusic)
+    # db.refresh(ymusic)
     return clip, ymusic, nameOfExistingSong
 
 def addDataToClip(requestform, db: Session):
@@ -94,9 +95,10 @@ def addDataToClip(requestform, db: Session):
         elif requestform[request_iteration] == "non":
             setattr(clip, request_iteration, 0)
 
-        elif request_iteration == "ymusic_id" :
-            setattr(clip, request_iteration, requestform[request_iteration])
-            setattr(ymusic, request_iteration, requestform[request_iteration])
+        elif request_iteration == "ymusic_id":
+            if ymusic != None:
+                setattr(clip, request_iteration, requestform[request_iteration])
+                setattr(ymusic, request_iteration, requestform[request_iteration])
             
         elif request_iteration == "ymusic_title":
             if ymusic != None:

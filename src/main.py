@@ -33,7 +33,10 @@ app.add_middleware(
 from dotenv import load_dotenv
 load_dotenv()
 
-videoFolder = os.getenv("DOCKER_VIDEO_FOLDER")
+if not os.path.exists(".env"):
+    videoFolder= "/video_folder/"
+else: 
+    videoFolder = os.getenv("VIDEO_FOLDER")
 
 # Dependency
 

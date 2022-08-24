@@ -9,7 +9,11 @@ load_dotenv()
 # SQLALCHEMY_DTABASE_URL = "sqlite:///./sql_app.db"
 # SQLALCHEMY_DTABASE_URL = "postgresql://postgres:postgres@localhost:5432/creatorDBpostgresql://postgres:postgres@localhost:5432/creatorDB" 
 
-SQLALCHEMY_DTABASE_URL = os.getenv("DOCKER_DATABASE")
+if not os.path.exists(".env"):
+    SQLALCHEMY_DTABASE_URL = "postgresql://postgres:postgres@postgres:5432/postgres"
+else:
+    SQLALCHEMY_DTABASE_URL = os.getenv("DATABASE")
+
 
 
 engine = create_engine(
